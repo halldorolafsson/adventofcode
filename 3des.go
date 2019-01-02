@@ -48,6 +48,7 @@ func main() {
 		// add struct claim to sliceOfclaims
 		sliceOfclaims = append(sliceOfclaims, claim{sid, sleftstart, stopstart, sleftwide, stoptall})
 		// investigate if this should bed stored in a map
+		// create a map and add sliceOfclaims
 
 	}
 	fmt.Println(sliceOfclaims)
