@@ -44,18 +44,30 @@ func main() {
                 sleftwide, err := strconv.Atoi(line[s.Index(line, ":")+2 : s.Index(line, "x")])
                 stoptall, err := strconv.Atoi(line[s.Index(line, "x")+1:])
                 check(err)
-
-                // add struct claim to sliceOfclaims
                 sliceOfclaims = append(sliceOfclaims, claim{sid, sleftstart, stopstart, sleftwide, stoptall})
-                // investigate if this should bed stored in a map
-                // create a map and add sliceOfclaims
-
         }
-        fmt.Println(sliceOfclaims)
 
         if err := workscanner.Err(); err != nil {
                 log.Fatal(err)
         }
+        var y =  len(sliceOfclaims)
+        fmt.Printf("y=",y)
+        for _, sliceOfclaims := range sliceOfclaims {
+          //fmt.Printf("slice:",sliceOfclaims.id, sliceOfclaims.leftstart,sliceOfclaims.topstart,sliceOfclaims.leftwide, sliceOfclaims.toptall)
+          y++
+          if y == 1342 {
+            fmt.Printf("slice:",sliceOfclaims.id, sliceOfclaims.leftstart,sliceOfclaims.topstart,sliceOfclaims.leftwide, sliceOfclaims.toptall)
+            check(err)
+          }
+        }
+
+
+
+/*        for i := 0; i < linecounter("input_3.txt");i++ {
+            fmt.Println(sliceOfclaims[i:i+1])
+            check(err)
+        }
+*/
 }
 
 func linecounter(filename string) int {
