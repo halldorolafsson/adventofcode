@@ -1,42 +1,42 @@
 package main
 
 import (
-	"fmt"
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
 )
 
 func main() {
-plan("PLAN:")
-plan("Åpne fil.")
-plan("Lope over linjer og lese verdier")
-plan("Konvertere string verdier til integer ")
-plan("Finne resultat")
-plan("Lukke fil")
+	plan("PLAN:")
+	plan("Åpne fil.")
+	plan("Lope over linjer og lese verdier")
+	plan("Konvertere string verdier til integer ")
+	plan("Finne resultat")
+	plan("Lukke fil")
 
 	file, err := os.Open("input.txt")
 	if err != nil {
-			log.Fatal(err)
+		log.Fatal(err)
 	}
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 	var y int
 	for scanner.Scan() {
-			//fmt.Println(scanner.Text())
-			i, err := strconv.Atoi(scanner.Text())
-			if err != nil {
-					log.Fatal(err)
-			}
-			fmt.Println(i)
-			y +=i
-			fmt.Println("Y er jammen lik= ", y)
+		//fmt.Println(scanner.Text())
+		i, err := strconv.Atoi(scanner.Text())
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(i)
+		y += i
+		fmt.Println("Y er jammen lik= ", y)
 	}
 	fmt.Println(y)
-		if err := scanner.Err(); err != nil {
-			log.Fatal(err)
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
 	}
 }
 
