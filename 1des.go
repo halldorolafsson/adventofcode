@@ -33,7 +33,7 @@ plan("Lukke fil")
 			fmt.Println(i)
 			y +=i
 			fmt.Println("Y er lik= ", y)
-	}
+}
 	fmt.Println(y)
 		if err := scanner.Err(); err != nil {
 			log.Fatal(err)
