@@ -1,0 +1,49 @@
+min 1
+max 4 
+sett kjhaakj
+letter a
+commonount 0
+minc 0
+mincount 0
+maxc 1 
+maxcount 1
+
+min 11
+max 13
+sett mmmmvmbmmmmmmmmmmmqm
+letter m
+commonount 1
+minc 1
+mincount 1
+maxc 1
+maxcount 2
+
+min 10
+max 11
+sett blpbhgjcgmgg
+letter g
+commonount 2
+minc 1
+mincount 2
+maxc 1
+maxcount 3
+
+min 9
+max 11
+sett dddpddsnzdkqpdddk
+letter d
+commonount 2
+minc 1
+mincount 3
+maxc 0
+maxcount 3
+
+min 4
+max 9
+sett xfcfthqzw
+letter f
+commonount 2
+minc 0
+mincount 3
+maxc 0
+maxcount 3
