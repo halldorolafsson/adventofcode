@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	fmt.Println("Helle World")
+	fmt.Println("Helle Halldor")
 }
