@@ -1,0 +1,2378 @@
+Skip to content
+Search...
+Log in
+Create account
+
+8
+
+2
+
+1
+
+Cover image for Advent of Code 2020 Solution Megathread - Day 4: Passport Processing
+Advent of Code 2020 Solution Megathread - Day 4: Passport Processing
+#adventofcode #challenge
+rpalo profile image
+Ryan Palo
+Dec 4 ・Updated on Dec 13 ・1 min read
+Advent of Code 2020 (12 Part Series)
+1
+Advent of Code 2020 Solution Megathread - Day 1: Report Repair
+2
+Advent of Code 2020 Solution Megathread - Day 2: Password Philosophy
+3
+Advent of Code 2020 Solution Megathread - Day 3: Toboggan Trajectory
+4
+Advent of Code 2020 Solution Megathread - Day 4: Passport Processing
+5
+Advent of Code 2020 Solution Megathread - Day 5: Binary Boarding
+6
+Advent of Code 2020 Solution Megathread - Day 6: Custom Customs
+7
+Advent of Code 2020 Solution Megathread - Day 7: Handy Haversacks
+8
+Advent of Code 2020 Solution Megathread - Day 8: Handheld Halting
+9
+Advent of Code 2020 Solution Megathread - Day 9: Encoding Error
+10
+Advent of Code 2020 Solution Megathread - Day 10: Adapter Array
+11
+Advent of Code 2020 Solution Megathread - Day 11: Seating System
+12
+Advent of Code 2020 Solution Megathread - Day 12: Rain Risk
+Day 4! I was worried as I was reading the first problem yesterday that I would have to optimize for any rational slope. I'm thankful he decided to take it easier than that for Day 3.
+
+The Puzzle
+In today’s puzzle, we're just trying to get through airport security, which is jam-packed because, obviously, Santa's magic keeps the North Pole COVID-free. It's classified as a hum-bug. 🥁 Anyways. The passport scanner is broken and we're doing a good deed by "fixing" it. And by "fixing," we mean "hacking it to let us through but also mostly fixing it."
+
+Y'all. We are THIS close to validating YAML and I am here for it.
+
+The Leaderboards
+As always, this is the spot where I’ll plug any leaderboard codes shared from the community.
+Ryan's Leaderboard: 224198-25048a19
+If you want to generate your own leaderboard and signal boost it a little bit, send it to me either in a DEV message or in a comment on one of these posts and I'll add it to the list above.
+
+Yesterday’s Languages
+Updated 03:06PM 12/12/2020 PST.
+
+Language	Count
+Python	8
+JavaScript	3
+Rust	2
+Haskell	2
+C#	1
+Raku	1
+COBOL	1
+PHP	1
+Ruby	1
+Elixir	1
+Go	1
+C	1
+Merry Coding!
+
+Advent of Code 2020 (12 Part Series)
+1
+Advent of Code 2020 Solution Megathread - Day 1: Report Repair
+2
+Advent of Code 2020 Solution Megathread - Day 2: Password Philosophy
+3
+Advent of Code 2020 Solution Megathread - Day 3: Toboggan Trajectory
+4
+Advent of Code 2020 Solution Megathread - Day 4: Passport Processing
+5
+Advent of Code 2020 Solution Megathread - Day 5: Binary Boarding
+6
+Advent of Code 2020 Solution Megathread - Day 6: Custom Customs
+7
+Advent of Code 2020 Solution Megathread - Day 7: Handy Haversacks
+8
+Advent of Code 2020 Solution Megathread - Day 8: Handheld Halting
+9
+Advent of Code 2020 Solution Megathread - Day 9: Encoding Error
+10
+Advent of Code 2020 Solution Megathread - Day 10: Adapter Array
+11
+Advent of Code 2020 Solution Megathread - Day 11: Seating System
+12
+Advent of Code 2020 Solution Megathread - Day 12: Rain Risk
+Discussion
+Subscribe
+pic
+Add to the discussion
+ 
+benwtrent profile image
+Benjamin Trent
+•
+Dec 4
+
+My super gross rust impl. Messy regex. I am sure there are way better ways to parse according to white space.
+
+Also, I sort of went half-way with a struct solution. Probably would have been better to either go all the way or not have custom types at all.
+#[derive(Debug)]
+struct Passport {
+    birth_year: Option<usize>,
+    issue_year: Option<usize>,
+    exp_year: Option<usize>,
+    height: Option<String>,
+    hair_color: Option<String>,
+    eye_color: Option<String>,
+    pid: Option<String>,
+    cid: Option<usize>,
+}
+
+impl From<&str> for Passport {
+    fn from(s: &str) -> Self {
+        let (
+            mut birth_year,
+            mut issue_year,
+            mut exp_year,
+            mut height,
+            mut hair_color,
+            mut eye_color,
+            mut pid,
+            mut cid,
+        ) = (
+            Option::None,
+            Option::None,
+            Option::None,
+            Option::None,
+            Option::None,
+            Option::None,
+            Option::None,
+            Option::None,
+        );
+        s.split(" ").filter(|i| !i.is_empty()).for_each(|i| {
+            let name_var: Vec<&str> = i.split(":").collect();
+            match name_var[0] {
+                "byr" => birth_year = Option::Some(name_var[1].parse().unwrap()),
+                "iyr" => issue_year = Option::Some(name_var[1].parse().unwrap()),
+                "eyr" => exp_year = Option::Some(name_var[1].parse().unwrap()),
+                "hgt" => height = Option::Some(String::from(name_var[1])),
+                "hcl" => hair_color = Option::Some(String::from(name_var[1])),
+                "ecl" => eye_color = Option::Some(String::from(name_var[1])),
+                "pid" => pid = Option::Some(String::from(name_var[1])),
+                "cid" => cid = Option::Some(name_var[1].parse().unwrap()),
+                _ => {}
+            }
+        });
+        Passport {
+            birth_year,
+            issue_year,
+            exp_year,
+            height,
+            hair_color,
+            eye_color,
+            pid,
+            cid,
+        }
+    }
+}
+
+impl Passport {
+    pub fn is_valid(&self) -> bool {
+        self.birth_year.is_some()
+            && self.issue_year.is_some()
+            && self.exp_year.is_some()
+            && self.height.is_some()
+            && self.hair_color.is_some()
+            && self.eye_color.is_some()
+            && self.pid.is_some()
+    }
+
+    pub fn is_valid_strict(&self) -> bool {
+        self.valid_birth_year()
+            && self.valid_issue_year()
+            && self.valid_exp_year()
+            && self.valid_hgt()
+            && self.valid_hair()
+            && self.valid_eyes()
+            && self.valid_pid()
+    }
+
+    fn valid_birth_year(&self) -> bool {
+        (1920..=2002).contains(&self.birth_year.unwrap_or_default())
+    }
+
+    fn valid_issue_year(&self) -> bool {
+        (2010..=2020).contains(&self.issue_year.unwrap_or_default())
+    }
+
+    fn valid_exp_year(&self) -> bool {
+        (2020..=2030).contains(&self.exp_year.unwrap_or_default())
+    }
+
+    fn valid_hgt(&self) -> bool {
+        if let Some(height) = self.height.as_ref() {
+            let range = match &height[height.len() - 2..] {
+                "in" => (59..=76),
+                "cm" => (150..=193),
+                _ => return false,
+            };
+            range.contains(&height[0..height.len() - 2].parse::<usize>().unwrap_or(0))
+        } else {
+            false
+        }
+    }
+
+    fn valid_hair(&self) -> bool {
+        Passport::valid_str(self.hair_color.as_ref(), r"^#[0-9a-f]{6}$")
+    }
+
+    fn valid_eyes(&self) -> bool {
+        Passport::valid_str(self.eye_color.as_ref(), r"^amb|blu|brn|gry|grn|hzl|oth$")
+    }
+
+    fn valid_pid(&self) -> bool {
+        Passport::valid_str(self.pid.as_ref(), r"^[0-9]{9}$")
+    }
+
+    fn valid_str(maybe_str: Option<&String>, re: &str) -> bool {
+        if let Some(str) = maybe_str {
+            let re = regex::Regex::new(re).unwrap();
+            let captures = re.captures(str.as_str());
+            captures.is_some()
+        } else {
+            false
+        }
+    }
+}
+
+#[aoc_generator(day4)]
+fn input_to_vec(input: &str) -> Vec<Passport> {
+    let mut cleaned_str = String::from("");
+    let mut cleaned_input: Vec<Passport> = vec![];
+    input.lines().for_each(|i| {
+        if i.is_empty() && !cleaned_str.is_empty() {
+            cleaned_input.push(Passport::from(cleaned_str.as_str()));
+            cleaned_str = String::from("");
+        }
+        cleaned_str += i;
+        cleaned_str += " ";
+    });
+    if !cleaned_str.is_empty() {
+        cleaned_input.push(Passport::from(cleaned_str.as_str()));
+    }
+    cleaned_input
+}
+
+#[aoc(day4, part1)]
+fn valid_count(input: &Vec<Passport>) -> usize {
+    input.iter().filter(|p| p.is_valid()).count()
+}
+
+#[aoc(day4, part2)]
+fn strict_valid_count(input: &Vec<Passport>) -> usize {
+    input.iter().filter(|p| p.is_valid_strict()).count()
+}
+
+5
+ likes
+Reply
+ 
+ballpointcarrot profile image
+Christopher Kruse
+•
+Dec 4
+
+You're not alone in the ugly feeling. I had a particularly nasty bug that gave me one result too many in part two (realized I had a missing ^ and $ on the regex for pid).
+
+I see a fair amount of similarities in approach, so I'm glad to see I'm in good company. :D
+
+As always, on Github.
+use aoc_runner_derive::{aoc, aoc_generator};
+use regex::Regex;
+
+#[derive(Debug, PartialEq)]
+struct Height {
+    measure: usize,
+    unit: String,
+}
+
+impl Height {
+    fn parse(hgt_str: &str) -> Option<Height> {
+        let re = Regex::new("(\\d+)(in|cm)").expect("Unable to create Regex");
+        match re.captures(hgt_str) {
+            None => None,
+            Some(captures) => {
+                let h = Height {
+                    measure: str::parse(captures.get(1).unwrap().as_str())
+                        .expect("Unable to parse number"),
+                    unit: String::from(captures.get(2).unwrap().as_str()),
+                };
+                Some(h)
+            }
+        }
+    }
+    fn is_valid(&self) -> bool {
+        match self.unit.as_str() {
+            "cm" => self.measure >= 150 && self.measure <= 193,
+            "in" => self.measure >= 59 && self.measure <= 76,
+            _ => panic!("Not a valid unit"),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq)]
+struct Passport {
+    byr: Option<usize>,
+    iyr: Option<usize>,
+    eyr: Option<usize>,
+    hgt: Option<Height>,
+    hgt_str: Option<String>,
+    hcl: Option<String>,
+    ecl: Option<String>,
+    pid: Option<String>,
+    cid: Option<String>,
+}
+
+impl Passport {
+    fn new() -> Passport {
+        Passport {
+            byr: None,
+            iyr: None,
+            eyr: None,
+            hgt: None,
+            hgt_str: None,
+            hcl: None,
+            ecl: None,
+            pid: None,
+            cid: None,
+        }
+    }
+
+    fn has_fields(&self) -> bool {
+        self.byr.is_some()
+            && self.iyr.is_some()
+            && self.eyr.is_some()
+            && self.hgt_str.is_some()
+            && self.hcl.is_some()
+            && self.ecl.is_some()
+            && self.pid.is_some()
+    }
+
+    fn is_valid(&self) -> bool {
+        self.valid_byr()
+            && self.valid_iyr()
+            && self.valid_eyr()
+            && self.valid_hgt()
+            && self.valid_hcl()
+            && self.valid_ecl()
+            && self.valid_pid()
+    }
+
+    fn valid_byr(&self) -> bool {
+        match self.byr {
+            None => false,
+            Some(n) => n >= 1920 && n <= 2002,
+        }
+    }
+    fn valid_iyr(&self) -> bool {
+        match self.iyr {
+            None => false,
+            Some(n) => n >= 2010 && n <= 2020,
+        }
+    }
+    fn valid_eyr(&self) -> bool {
+        match self.eyr {
+            None => false,
+            Some(n) => n >= 2020 && n <= 2030,
+        }
+    }
+    fn valid_hgt(&self) -> bool {
+        match &self.hgt {
+            None => false,
+            Some(h) => h.is_valid(),
+        }
+    }
+    fn valid_hcl(&self) -> bool {
+        let re = Regex::new("^#[0-9a-f]{6}$").expect("Failed to make regex");
+        match &self.hcl {
+            None => false,
+            Some(hair) => re.is_match(hair.as_str()),
+        }
+    }
+    fn valid_ecl(&self) -> bool {
+        let valid_colors = vec!["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];
+        match &self.ecl {
+            None => false,
+            Some(c) => valid_colors.contains(&c.as_str()),
+        }
+    }
+    fn valid_pid(&self) -> bool {
+        let re = Regex::new("^[0-9]{9}$").expect("Failed to build Regex");
+        match &self.pid {
+            None => false,
+            Some(pid) => re.is_match(pid.as_str()),
+        }
+    }
+}
+
+#[aoc_generator(day4)]
+fn parse_input_day4(input: &str) -> Vec<Passport> {
+    input
+        .split("\n\n")
+        .map(|passport_str| parse_passport(passport_str))
+        .collect()
+}
+
+fn parse_passport(passport_str: &str) -> Passport {
+    let kv: Vec<&str> = passport_str
+        .lines()
+        .flat_map(|line| line.split(" "))
+        .collect();
+    let mut pass = Passport::new();
+    for key_val in kv {
+        let pair: Vec<&str> = key_val.split(":").collect();
+        match *(pair.get(0).unwrap()) {
+            "cid" => pass.cid = Some(String::from(*pair.get(1).unwrap())),
+            "byr" => pass.byr = Some(str::parse(*pair.get(1).unwrap()).unwrap()),
+            "iyr" => pass.iyr = Some(str::parse(*pair.get(1).unwrap()).unwrap()),
+            "eyr" => pass.eyr = Some(str::parse(*pair.get(1).unwrap()).unwrap()),
+            "hgt" => {
+                pass.hgt_str = Some(str::parse(*pair.get(1).unwrap()).unwrap());
+                pass.hgt = Height::parse(*pair.get(1).unwrap());
+            }
+            "hcl" => pass.hcl = Some(String::from(*pair.get(1).unwrap())),
+            "ecl" => pass.ecl = Some(String::from(*pair.get(1).unwrap())),
+            "pid" => pass.pid = Some(String::from(*pair.get(1).unwrap())),
+            _ => panic!("Found passport code that doesn't match"),
+        }
+    }
+    pass
+}
+
+#[aoc(day4, part1)]
+fn count_valid_passports(input: &Vec<Passport>) -> usize {
+    input.iter().filter(|pass| pass.has_fields()).count()
+}
+
+#[aoc(day4, part2)]
+fn count_valid_data_passports(input: &Vec<Passport>) -> usize {
+    input.iter().filter(|pass| pass.is_valid()).count()
+}
+
+2
+ likes
+Reply
+ 
+aspittel profile image
+Ali Spittel
+•
+Dec 4
+
+I hate problems like this:
+class Validator:
+    def __init__(self, passport):
+        self.passport = passport
+
+    def check_field_count(self):
+        return len(self.passport) == 8 or (len(self.passport) == 7 and 'cid' not in self.passport)
+
+    def check_year(self, key, start, end):
+        return len(self.passport[key]) == 4 and int(self.passport[key]) >= start and int(self.passport[key]) <= end
+
+    def check_byr(self):
+        return self.check_year('byr', 1920, 2002)
+
+    def check_iyr(self):
+        return self.check_year('iyr', 2010, 2020)
+
+    def check_eyr(self):
+        return self.check_year('eyr', 2020, 2030)
+
+    def check_hcl(self):
+        return self.passport['hcl'][0] == "#" and self.passport['hcl'][1:].isalnum()
+
+    def check_ecl(self):
+        return self.passport['ecl'] in ['amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth']
+
+    def check_pid(self):
+        return len(self.passport['pid']) == 9
+
+    def check_hgt(self):
+        if self.passport['hgt'][-2:] == "cm":
+            return int(self.passport['hgt'][:-2]) >= 150 and int(self.passport['hgt'][:-2]) <= 193
+        elif self.passport['hgt'][-2:] == "in":
+            return int(self.passport['hgt'][:-2]) >= 59 and int(self.passport['hgt'][:-2]) <= 76
+
+    def is_valid(self):
+        return (self.check_field_count() and self.check_byr() and self.check_iyr() and self.check_eyr() 
+            and self.check_hcl() and self.check_ecl() and self.check_pid() and self.check_hgt())
+
+
+def get_passports(inp):
+    passports = []
+    passport = {}
+    for line in inp:
+        if line != "\n":
+            line = line.rstrip().split(" ")
+            line = [field.split(":") for field in line]
+            for field in line:
+                passport[field[0]] = field[1]
+        else:
+            passports.append(passport)
+            passport = {}
+    passports.append(passport)
+    return passports
+
+
+with open('input.txt') as inp:
+    passports = get_passports(inp)
+    validators = [Validator(passport) for passport in passports]
+    part_1_count = 0
+    part_2_count = 0
+    for validator in validators:
+        if validator.check_field_count(): 
+            part_1_count += 1
+        if validator.is_valid(): 
+            part_2_count += 1                        
+
+    print(part_1_count) 
+    print(part_2_count)                
+
+4
+ likes
+Reply
+ 
+meseta profile image
+Yuan Gao
+•
+Dec 5
+
+I went ahead and wrote a solution using PEG in Python (parsimonious library). Aside from the slightly compact PEG grammar, the rest of it is very readable
+
+from parsimonious.grammar import Grammar, NodeVisitor
+from parsimonious.exceptions import ParseError, IncompleteParseError, VisitationError
+
+grammar = Grammar(r"""
+    EXPR  = ITEM+
+    ITEM  = (BYR / IYR / EYR / HGT / HCL / ECL / PID / CID) WHITE?
+    WHITE =  ~r"[\s]+"
+
+    BYR   = "byr:" NUMB
+    IYR   = "iyr:" NUMB
+    EYR   = "eyr:" NUMB
+    HGT   = "hgt:" (HGTCM / HGTIN)
+    HCL   = "hcl:" ~r"#[0-9a-f]{6}"
+    ECL   = "ecl:" ("amb" / "blu" / "brn" / "gry" / "grn" / "hzl" / "oth") 
+    PID   = "pid:" ~r"[0-9]{9}"
+    CID   = "cid:" ~r"[0-9a-zA-Z]*"
+
+    HGTCM = NUMB "cm"
+    HGTIN = NUMB "in"
+
+    NUMB  = ~r"[0-9]{2,4}"
+""")
+
+class PassportVisitor(NodeVisitor):
+    def visit_EXPR(self, node, visited_children):
+        assert not {"BYR", "IYR", "EYR", "HGT", "HCL", "ECL", "PID"}.difference(visited_children)
+
+    def visit_ITEM(self, node, visited_children):
+        return node.children[0].children[0].expr_name
+
+    def visit_BYR(self, node, visited_children):
+        assert 1920 <= visited_children[1] <= 2002
+
+    def visit_IYR(self, node, visited_children):
+        assert 2010 <= visited_children[1] <= 2020
+
+    def visit_EYR(self, node, visited_children):
+        assert 2020 <= visited_children[1] <= 2030
+
+    def visit_HGTCM(self, node, visited_children):
+        assert 150 <= visited_children[0] <= 193
+
+    def visit_HGTIN(self, node, visited_children):
+        assert 59 <= visited_children[0] <= 76
+
+    def visit_NUMB(self, node, visited_children):
+        return int(node.text)
+
+    def generic_visit(self, node, visited_children):
+        return visited_children or node
+
+pv = PassportVisitor()
+pv.grammar = grammar
+
+data = open("input.txt").read().split("\n\n")
+valid = 0
+for entry in data:
+    try:
+        pv.parse(entry)
+    except (ParseError, VisitationError, IncompleteParseError):
+        continue
+    else:
+        valid += 1
+print("Valid:", valid)
+
+3
+ likes
+Reply
+ 
+galoisgirl profile image
+Anna
+•
+Dec 4
+
+Not my finest work, I took advantage of the fact that some problems didn't arise in the test data. Then again, this isn't real life, it's a game and I got the stars. 😉
+
+Part 2 here.
+
+   IDENTIFICATION DIVISION.
+   PROGRAM-ID. AOC-2020-04-1.
+   AUTHOR. ANNA KOSIERADZKA.
+
+   ENVIRONMENT DIVISION.
+   INPUT-OUTPUT SECTION.
+   FILE-CONTROL.
+       SELECT INPUTFILE ASSIGN TO "d4.input"
+       ORGANIZATION IS LINE SEQUENTIAL.
+
+   DATA DIVISION.
+   FILE SECTION.
+     FD INPUTFILE
+     RECORD IS VARYING IN SIZE FROM 1 to 99
+     DEPENDING ON REC-LEN.
+     01 INPUTRECORD PIC X(99).
+   WORKING-STORAGE SECTION.
+     01 FILE-STATUS PIC 9 VALUE 0.
+     01 REC-LEN PIC 9(2) COMP.
+     01 WS-ROW PIC X(16) OCCURS 8 TIMES.
+     01 WS-CHAR PIC X.
+
+   LOCAL-STORAGE SECTION.
+     01 CORRECT-PASSPORTS UNSIGNED-INT VALUE 0.
+     01 FOUND-FIELDS UNSIGNED-INT VALUE 0.
+     01 STRING-PTR UNSIGNED-INT VALUE 1.
+     01 I UNSIGNED-INT VALUE 1.
+
+   PROCEDURE DIVISION.
+   001-MAIN.
+       OPEN INPUT INPUTFILE.
+       PERFORM 002-READ UNTIL FILE-STATUS = 1.
+       CLOSE INPUTFILE.
+       PERFORM 004-NEXT-PASSPORT.
+       DISPLAY CORRECT-PASSPORTS.
+       STOP RUN.
+
+   002-READ.
+        READ INPUTFILE
+            AT END MOVE 1 TO FILE-STATUS
+            NOT AT END PERFORM 003-PROCESS-RECORD
+        END-READ.
+
+   003-PROCESS-RECORD.
+       IF REC-LEN = 0 THEN
+          PERFORM 004-NEXT-PASSPORT
+       ELSE 
+          PERFORM 005-PROCESS-ROW
+       END-IF.
+
+   004-NEXT-PASSPORT.
+       IF FOUND-FIELDS = 7 THEN 
+          ADD 1 TO CORRECT-PASSPORTS
+       END-IF.
+       MOVE 0 TO FOUND-FIELDS.
+
+   005-PROCESS-ROW.
+       MOVE 1 TO STRING-PTR.
+       PERFORM VARYING I FROM 1 BY 1 UNTIL I > 8
+         UNSTRING INPUTRECORD DELIMITED BY SPACE INTO WS-ROW(I)
+         WITH POINTER STRING-PTR
+       END-PERFORM.
+
+       PERFORM VARYING I FROM 1 BY 1 UNTIL I > 8
+          MOVE WS-ROW(I)(1:1) TO WS-CHAR
+          IF NOT WS-CHAR ='c' AND NOT WS-CHAR = ' ' THEN
+             ADD 1 TO FOUND-FIELDS
+          END-IF
+       END-PERFORM.
+
+4
+ likes
+Reply
+ 
+willsmart profile image
+willsmart
+•
+Dec 4
+
+Plain forgot to break out of the comfort zone and use something other than javascript :|
+I'll try C tomorrow
+
+Here's today:
+const input = require('fs')
+  .readFileSync('4.txt', 'utf-8')
+  .split(/\n{2,}/g)
+  .map(s => Object.fromEntries(s.split(/\s+/g).map(s => s.split(':'))));
+
+console.log({
+  input: input.map(v => ({ v: JSON.stringify(v), isValid: isValid(v), check: check(v) })),
+  count: input.reduce((acc, v) => acc + isValid(v), 0),
+});
+
+function check(v) {
+  return ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']
+    .flatMap(k => (k in v && !validPair(k, v[k]) ? k : []))
+    .join(' ');
+}
+function isValid(v) {
+  return ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'].reduce(
+    (acc, k) => acc && k in v && validPair(k, v[k]),
+    true
+  );
+}
+
+function validPair(k, v) {
+  let m;
+  switch (k) {
+    case 'byr':
+      return v.length === 4 && v >= 1920 && v <= 2002;
+    case 'iyr':
+      return v.length === 4 && v >= 2010 && v <= 2020;
+    case 'eyr':
+      return v.length === 4 && v >= 2020 && v <= 2030;
+    case 'hgt':
+      if ((m = /^([\d.]+)cm$/.exec(v))) return m[1] >= 150 && m[1] <= 193;
+      if ((m = /^([\d.]+)in$/.exec(v))) return m[1] >= 59 && m[1] <= 76;
+      return false;
+    case 'hcl':
+      return /^#[0-9a-f]{6}$/.test(v);
+    case 'ecl':
+      return ['amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth'].includes(v);
+    case 'pid':
+      return /^[0-9]{9}$/.test(v);
+  }
+}
+(added check as a way to see which field validator was broken when I failed part 2 the first time. It was a stupid typo in 'ecl')
+
+
+2
+ likes
+Reply
+ 
+particleflux profile image
+Stefan Linke
+•
+Dec 5
+
+Warning this might be offensive to some :D
+My Saturday was too long, so I created a code-golfed PHP version (for both parts)
+<?$r=['byr):((19[2-9]\d|200[0-2]','iyr):((201\d|2020','eyr):((202\d|2030','hgt):(((?:1[5-8]\d|19[0-3])cm|(?:59|6\d|7[0-6])in','hcl):((#[\da-f]{6}','ecl):((amb|blu|brn|gry|grn|hzl|oth','pid):((\d{9}'];foreach(explode("
+
+",file_get_contents('input'))as$p){$s=$t=1;for($i=0;$i<7;)if(!preg_match("/(?:^|\s)({$r[$i++]})(\s|$))?/",$p,$m))$s=$t=0;elseif(!($m[2]??0))$t=0;$x+=$s;$y+=$t;}echo"$x $y";
+
+2
+ likes
+Reply
+ 
+particleflux profile image
+Stefan Linke
+•
+Dec 5
+
+Go again, a bit hacky with the very last element
+package main
+
+import (
+    "bufio"
+    "fmt"
+    "io"
+    "os"
+    "regexp"
+    "strconv"
+    "strings"
+)
+
+var requiredAttributes = []string{"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
+
+func isValid(passport map[string]string) bool {
+    for _, attribute := range requiredAttributes {
+        if _, exists := passport[attribute]; !exists {
+            return false
+        }
+    }
+
+    return true
+}
+
+func exists(slice []string, val string) bool {
+    for _, item := range slice {
+        if item == val {
+            return true
+        }
+    }
+    return false
+}
+
+func validateRange(val string, lower, upper int) bool {
+    num, err := strconv.Atoi(val)
+    return err == nil && num >= lower && num <= upper
+}
+
+func isValidV2(passport map[string]string) bool {
+    for attr, val := range passport {
+        switch attr {
+        case "byr":
+            if !validateRange(val, 1920, 2002) {
+                return false
+            }
+        case "iyr":
+            if !validateRange(val, 2010, 2020) {
+                return false
+            }
+        case "eyr":
+            if !validateRange(val, 2020, 2030) {
+                return false
+            }
+
+        case "hgt":
+            if strings.HasSuffix(val, "cm") {
+                if !validateRange(strings.TrimSuffix(val, "cm"), 150, 193) {
+                    return false
+                }
+            } else if strings.HasSuffix(val, "in") {
+                if !validateRange(strings.TrimSuffix(val, "in"), 59, 76) {
+                    return false
+                }
+            } else {
+                return false
+            }
+
+        case "hcl":
+            if match, _ := regexp.MatchString("^#[0-9a-f]{6}$", val); !match {
+                return false
+            }
+
+        case "ecl":
+            eyeColors := []string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}
+            if !exists(eyeColors, val) {
+                return false
+            }
+
+        case "pid":
+            if match, _ := regexp.MatchString("^[0-9]{9}$", val); !match {
+                return false
+            }
+        }
+    }
+
+    return true
+}
+
+func main() {
+    reader := bufio.NewReader(os.Stdin)
+    passport := make(map[string]string, 8)
+
+    numValid, numValidV2 := 0, 0
+    for {
+        var line string
+        line, err := reader.ReadString('\n')
+        if err == io.EOF {
+            break
+        }
+
+        line = strings.TrimSpace(line)
+
+        if len(line) == 0 {
+            // passport complete
+            if isValid(passport) {
+                numValid++
+                if isValidV2(passport) {
+                    numValidV2++
+                }
+            }
+            // reset passport
+            passport = make(map[string]string, 8)
+        } else {
+            parts := strings.Split(line, " ")
+            for _, part := range parts {
+                attribute := strings.Split(part, ":")
+                passport[attribute[0]] = attribute[1]
+            }
+        }
+    }
+
+    // last one is special snowflake, as file does not end with 2 newlines
+    if isValid(passport) {
+        numValid++
+        if isValidV2(passport) {
+            numValidV2++
+        }
+    }
+
+    fmt.Println(numValid, numValidV2)
+}
+
+2
+ likes
+Reply
+ 
+sleeplessbyte profile image
+Derk-Jan Karrenbeld
+•
+Dec 5
+
+I feel this reads as quite elegant in Ruby -- or at least my implementation of it.
+
+Hoping on something more interesting to do for Day 5!
+require 'benchmark'
+
+class Passport
+  RULES = {
+    byr: -> (value) { /^[0-9]{4}$/.match?(value) && (1920..2002).cover?(value.to_i) },
+    iyr: -> (value) { /^[0-9]{4}$/.match?(value) && (2010..2020).cover?(value.to_i) },
+    eyr: -> (value) { /^[0-9]{4}$/.match?(value) && (2020..2030).cover?(value.to_i) },
+    hgt: -> (value) {
+      match = /(^[1-9][0-9]+)(cm|in)$/.match(value)
+
+      match && (
+        (match[2] == 'cm' && (150..193).cover?(match[1].to_i)) ||
+        (match[2] == 'in' && (59..76).cover?(match[1].to_i))
+      )
+    },
+    hcl: -> (value) { /^\#[0-9a-f]{6}$/.match? value },
+    ecl: -> (value) { %w[amb blu brn gry grn hzl oth].include?(value) },
+    pid: -> (value) { /^[0-9]{9}$/.match? value }
+  }
+
+  def self.from(lines)
+    fields = lines.split(' ')
+
+    new(fields.each_with_object({}) do |kv, results|
+      k, v = kv.chomp.split(':')
+      results[k.to_sym] = v
+    end)
+  end
+
+  def initialize(fields)
+    self.fields = fields
+  end
+
+  def [](field)
+    fields[field]
+  end
+
+  def valid?
+    RULES.keys.all? { |field| RULES[field].(self[field]) }
+  end
+
+  private
+
+  attr_accessor :fields
+end
+
+data = File.read('input.txt')
+passports = data
+  .split(/\n\n/)
+  .map do |l|
+    Passport.from(l)
+  end
+
+Benchmark.bmbm do |b|
+  b.report do
+    puts passports.count(&:valid?)
+  end
+end
+
+2
+ likes
+Reply
+ 
+sethetter profile image
+Seth Etter
+•
+Dec 5
+
+Feels like it could have been cleaner, my first round was worse though! I refactored to use Result and the ? error propagation operator, which was fun.
+use regex::Regex;
+use anyhow::{anyhow, Result};
+
+#[derive(Clone)]
+struct Passport {
+    byr: Option<String>,
+    iyr: Option<String>,
+    eyr: Option<String>,
+    hgt: Option<String>,
+    hcl: Option<String>,
+    ecl: Option<String>,
+    pid: Option<String>,
+    cid: Option<String>,
+}
+
+impl Default for Passport {
+    fn default() -> Self {
+        Passport {
+            byr: None, iyr: None, eyr: None, hgt: None,
+            hcl: None, ecl: None, pid: None, cid: None,
+        }
+    }
+}
+
+fn main() {
+    let input = std::fs::read_to_string("input.txt").unwrap();
+
+    let passports: Vec<Passport> = input.trim().split("\n\n").map(parse_passport).collect();
+    let num_valid = passports.into_iter().filter(|p| {
+        // validate_passport(p).is_ok()
+        match validate_passport(p) {
+            Ok(_) => true,
+            Err(e) => { println!("{}", e); false },
+        }
+    }).count();
+
+    println!("Num Valid: {}", num_valid);
+}
+
+fn parse_passport(input: &str) -> Passport {
+    let mut p: Passport = Passport::default();
+    for entry in input.replace("\n", " ").split(" ") {
+        let parts: Vec<&str> = entry.split(":").collect();
+        let (label, value) = (parts[0], parts[1]);
+        match label {
+            "byr" => { p.byr = Some(value.to_owned()) },
+            "iyr" => { p.iyr = Some(value.to_owned()) },
+            "eyr" => { p.eyr = Some(value.to_owned()) },
+            "hgt" => { p.hgt = Some(value.to_owned()) },
+            "hcl" => { p.hcl = Some(value.to_owned()) },
+            "ecl" => { p.ecl = Some(value.to_owned()) },
+            "pid" => { p.pid = Some(value.to_owned()) },
+            "cid" => { p.cid = Some(value.to_owned()) },
+            _ => {},
+        }
+    }
+    p
+}
+
+fn validate_passport(p: &Passport) -> Result<()> {
+    check_year_range(p.clone().byr, 1920, 2002)?;
+    check_year_range(p.clone().iyr, 2010, 2020)?;
+    check_year_range(p.clone().eyr, 2020, 2030)?;
+    check_height(p.clone().hgt)?;
+    check_regex(p.clone().hcl, "#[0-9A-Fa-f]{6}")?;
+    check_regex(p.clone().ecl, "^(amb|blu|brn|gry|grn|hzl|oth)$")?;
+    check_regex(p.clone().pid, "^[0-9]{9}$")?;
+    Ok(())
+}
+
+fn check_year_range(year_str: Option<String>, min: usize, max: usize) -> Result<()> {
+    let year = year_str.ok_or(anyhow!("Missing value"))?.parse::<usize>()
+        .map_err(|_e| anyhow!("Failed to parse year_str"))?;
+    if year < min || year > max {
+        return Err(anyhow!("Year out of range"));
+    }
+    Ok(())
+}
+
+fn check_height(height: Option<String>) -> Result<()> {
+    let hgt = height.ok_or(anyhow!("Missing hgt"))?;
+
+    let re = Regex::new(r"^([0-9]+)(cm|in)$").unwrap();
+    let caps = re.captures(hgt.as_str()).ok_or(anyhow!("Invalid height format"))?;
+
+    let num_str = caps.get(1).unwrap().as_str();
+    let unit = caps.get(2).unwrap();
+
+    let num = num_str.parse::<usize>().map_err(|_e| anyhow!("Failed to parse height value"))?;
+
+    match unit.as_str() {
+        "in" if num < 59 || num > 76 => { return Err(anyhow!("Height out of range")); },
+        "cm" if num < 150 || num > 193 => { return Err(anyhow!("Height out of range")); },
+        _ => {},
+    }
+    Ok(())
+}
+
+fn check_regex(field: Option<String>, re_str: &str) -> Result<()> {
+    let re = Regex::new(re_str).unwrap();
+    let val = field.ok_or(anyhow!("Field missing"))?;
+    match re.is_match(val.as_str()) {
+        true => Ok(()),
+        false => Err(anyhow!(format!("Regex mismatch: {}, {}", re_str, val))),
+    }
+}
+
+2
+ likes
+Reply
+ 
+mustafahaddara profile image
+Mustafa Haddara
+•
+Dec 5
+
+Reading all of these solutions, I'm glad I opted to avoid regexes in my answers! There are some messy hacks here ("1234567890abcdef".indexOf(c) stands out) and the types should probably all have been string? instead of string, which would have made this a little more concise, but I'm still pretty happy with how it turned out.
+
+I am annoyed they decided to put multiple K:V pairs on the same line because it made the parsing a little messier but oh well.
+import { SolveFunc } from './types';
+
+export const solve: SolveFunc = (lines: string[]) => {
+  const passports: Passport[] = parse_passports(lines);
+  return passports.filter((p) => is_valid(p)).length.toString();
+};
+
+type Passport = {
+  byr: string;
+  iyr: string;
+  eyr: string;
+  hgt: string;
+  hcl: string;
+  ecl: string;
+  pid: string;
+  cid: string;
+};
+
+const parse_passports = (lines: string[]): Passport[] => {
+  let p: Passport = make_blank_passport();
+  const result = [p];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.trim() === '') {
+      p = make_blank_passport();
+      result.push(p);
+    }
+    line.split(' ').map((chunk) => {
+      const [k, v] = chunk.split(':');
+      p[k] = v;
+    });
+  }
+  return result;
+};
+
+const make_blank_passport = (): Passport => {
+  return {
+    byr: null,
+    iyr: null,
+    eyr: null,
+    hgt: null,
+    hcl: null,
+    ecl: null,
+    pid: null,
+    cid: null,
+  };
+};
+
+const is_valid = (p: Passport): boolean => {
+  return (
+    check_int(p.byr, 1920, 2002) &&
+    check_int(p.iyr, 2010, 2020) &&
+    check_int(p.eyr, 2020, 2030) &&
+    check_height(p.hgt) &&
+    check_hair_color(p.hcl) &&
+    check_eye_color(p.ecl) &&
+    check_passport_id(p.pid)
+  );
+};
+
+const check_int = (strval, min, max) => {
+  if (!strval) return false;
+  const val = parseInt(strval);
+  return min <= val && val <= max;
+};
+
+const check_height = (strval) => {
+  if (!strval) return false;
+  if (strval.endsWith('cm')) {
+    const [h] = strval.split('cm');
+    return check_int(h, 150, 193);
+  } else if (strval.endsWith('in')) {
+    const [h] = strval.split('in');
+    return check_int(h, 59, 76);
+  }
+  return false;
+};
+
+const check_hair_color = (strval) => {
+  if (!strval) return false;
+  if (strval.startsWith('#') && strval.length === 7) {
+    return strval.split('').filter((c) => '1234567890abcdef'.indexOf(c) < 0).length === 1;
+  }
+  return false;
+};
+
+const check_eye_color = (strval) => {
+  if (!strval) return false;
+  const accepted = ['amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth'];
+  return accepted.indexOf(strval) >= 0;
+};
+
+const check_passport_id = (strval) => {
+  if (!strval) return false;
+  if (strval.length !== 9) return false;
+  strval.split('').map((c) => parseInt(c));
+  return true;
+};
+
+2
+ likes
+Reply
+ 
+kudostoy0u profile image
+Kudos Beluga
+•
+Dec 4
+
+I might have created the dirtiest js code in the world for this
+let fs = require("fs"),part2 = true, fields = ['iyr','ecl','byr','hcl','eyr','hgt','pid'],pass = 0;
+fs.readFile("input.txt","utf8",(err,data) => {
+  if (err) throw err;
+data.split(/\n\s/gi).map(e => {
+  let isvalid = true;
+ for (i in fields) {
+   let match = e.match(new RegExp(`(?<=${fields[i]}:)[A-Z#a-z0-9]+`,"g"))
+  if (!match) isvalid=false; else if (part2) {
+      match = match[0];
+     switch (fields[i]) {   
+        case "byr":
+        if (!(Number(match)>= 1920 && Number(match)<= 2002)) isvalid=false;
+        break;
+        case "iyr":
+        if (!(Number(match)>= 2010 && Number(match)<= 2020)) isvalid=false;
+        break;
+        case "eyr":
+        if (!(Number(match)>= 2020 && Number(match)<= 2030)) isvalid=false;
+        break;
+        case "hgt":
+        if (match.slice(match.length-2,match.length) == "cm") {
+          if (!(Number(match.split("").splice(0,match.length-2).join("")) >= 150 && Number(match.split("").splice(0,match.length-2).join("")) <= 193)) isvalid = false;
+         } else {
+          if (!(Number(match.split("").splice(0,match.length-2).join("")) >= 59 && Number(match.split("").splice(0,match.length-2).join("")) <= 76)) isvalid = false;
+        }
+        break;
+        case "hcl":
+          if (!(match.match(/#([a-f0-9]){6}/i))) isvalid = false;
+        break;
+        case "ecl":
+        let haircolor = ["amb","blu","brn","gry","grn","hzl","oth"].map(e => {
+          if (match == e) return "valid"
+          }).filter(e => e)
+        if (!haircolor.length) isvalid = false;
+        break;
+        case "pid":
+        if(!(match.length == 9)) isvalid = false;
+        break;
+     }}} if (isvalid) pass++}); console.log(pass) })
+
+2
+ likes
+Reply
+ 
+totally_chase profile image
+Phantz
+•
+Dec 5
+
+would anyone be interested in a solution written entirely in C, without regex or hashtables
+static char const* formats[] = {
+    " byr:19%*2[0-9]%n", " byr:200%*1[0-2]%n",
+    " iyr:201%*1[0-9]%n", " iyr:2020%n",
+    " eyr:202%*1[0-9]%n", " eyr:2030%n",
+    " hgt:1%*1[5-8]%*1[0-9]cm%n", " hgt:19%*1[0-3]cm%n",
+        " hgt:59in%n", " hgt:6%*1[0-9]in%n", " hgt:7%*1[0-6]in%n",
+    " hcl:#%*x%n",
+    " ecl:amb%n", " ecl:blu%n", " ecl:brn%n", " ecl:gr%*1[yn]%n", " ecl:hzl%n", " ecl:oth%n",
+    " pid:%*9[0-9]%n",
+    " cid:%*s%n"
+};
+
+static bool is_valid(char const* s)
+{
+    size_t count = 0;
+    for (int n = 0, prevn = -1; n != prevn && s[n] != '\0';)
+    {
+        prevn = n;
+        for (size_t i = 0; i < sizeof formats / sizeof * formats; i++)
+        {
+            int _n = 0;
+            sscanf(s + n, formats[i], &_n);
+            if (_n != 0)
+            {
+                n += _n;
+                count += 1;
+                formats[i] = "";
+                break;
+            }
+        }
+    }
+    return count >= 7;
+}
+The input s to is_valid should be a full passport string (what you get after splitting by double new lines). It does parsing + validation at once and eagerly exits if any field validation fails.
+
+Yes, I know - very cursed. 'twas just for fun, and to prove a point ;)
+
+
+2
+ likes
+Reply
+ 
+bgaster profile image
+Benedict Gaster
+•
+Dec 4
+
+Here is a Haskell soloution for Day 4:
+-- check if a given "passport" field is a valid passport field
+isValidField :: (T.Text, T.Text) -> Bool
+isValidField (name,v) | name == "byr" = fourAux 1920 2002 
+                      | name == "iyr" = fourAux 2010 2020
+                      | name == "eyr" = fourAux 2020 2030 
+
+                      | name == "ecl" = v `elem` ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
+
+                      | name == "hcl" = let h = T.head v == '#'
+                                            ts = T.tail v
+                                        in h && T.length ts == 6 && elementOf "0123456789abcdef" ts 
+                      | name == "pid" = either (const False) (\_ -> T.length v == 9) (decimal v)
+                      | name == "hgt" = let (n,t) = (fst $ fromRight (0,"") (decimal (T.takeWhile (not . isAlpha) v)), 
+                                                                                      T.dropWhile (not . isAlpha) v)
+                                        in (t == "cm" && n >= 150 && n <= 193) || (t == "in" && n >= 59 && n <= 76)
+                      | otherwise     = name == "cid"
+    where 
+        fourAux min max = let n = fst $ fromRight (0,"") (decimal v) 
+                          in n >= min && n <= max && T.length v == 4
+
+        elementOf :: String -> T.Text -> Bool
+        elementOf xs = T.all (`elem` xs)
+
+-- check if a input field is a actually within the set of valid passport fields
+isValidFieldName xs = all (`elem` xs) ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
+
+isValidPassport :: [(T.Text, T.Text)] -> Bool
+isValidPassport xs = all isValidField xs && (isValidFieldName $ map fst xs)
+
+-- generate a list of passports, given a list of input lines
+passports :: [T.Text] -> [[(T.Text, T.Text)]]
+passports = docs [] []
+    where
+        docs doc ds [] = doc:ds
+        docs doc ds ("":xs) = docs [] (doc:ds) xs    
+        docs doc ds (x:xs) = docs (mkKey x ++ doc) ds xs
+
+        mkKey = map (\xs -> (T.takeWhile  (/=':') xs, 
+                             T.tail (T.dropWhile  (/=':') xs))) . splitOn " "
+
+main = do xs <- IOT.readFile "day4_input" <&> T.lines 
+          print (length $ filter isValidFieldName (map (map fst) $ passports xs)) 
+          print (length (filter isValidPassport (passports xs)))
+
+1
+ like
+Reply
+ 
+readyready15728 profile image
+readyready15728
+•
+Dec 7
+
+Ruby, part 2:
+passports = File.read('04.txt').split /\n\n/
+
+passports = passports.map do |passport|
+  fields = passport.split(/\n/).join(' ').split ' '
+  passport_hash = fields.map { |field| field.split ':' }.to_h
+end
+
+valid_count = 0
+
+def all_required_fields?(passport)
+  required_fields = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']
+  required_count = 0
+
+  required_fields.each do |field|
+    required_count += 1 if passport.include? field
+  end
+
+  required_count == required_fields.length
+end
+
+def valid_birth_year?(passport)
+  birth_year = passport['byr'].to_i
+  1920 <= birth_year and birth_year <= 2002
+end
+
+def valid_issue_year?(passport)
+  issue_year = passport['iyr'].to_i
+  2010 <= issue_year and issue_year <= 2020
+end
+
+def valid_expiration_year?(passport)
+  expiration_year = passport['eyr'].to_i
+  2020 <= expiration_year and expiration_year <= 2030
+end
+
+def valid_height?(passport)
+  match = /(?<number>\d+)(?<units>in|cm)/.match(passport['hgt'])
+  return false unless match
+  number = match.named_captures['number'].to_i
+  units = match.named_captures['units']
+
+  if units == 'in'
+    59 <= number and number <= 76
+  else
+    150 <= number and number <= 193
+  end
+end
+
+def valid_hair_color?(passport)
+  /\A#[0-9a-f]{6}\z/.match passport['hcl']
+end
+
+def valid_eye_color?(passport)
+  begin
+    %q{amb blu brn gry grn hzl oth}.include? passport['ecl']
+  rescue
+    false
+  end
+end
+
+def valid_passport_id?(passport)
+  /\A[0-9]{9}\z/.match passport['pid']
+end
+
+def valid_passport?(passport)
+  test_outcomes = [
+    all_required_fields?(passport),
+    valid_birth_year?(passport),
+    valid_issue_year?(passport),
+    valid_expiration_year?(passport),
+    valid_height?(passport),
+    valid_hair_color?(passport),
+    valid_eye_color?(passport),
+    valid_passport_id?(passport)
+  ]
+
+  test_outcomes.all?
+end
+
+passports.each do |passport|
+  valid_count += 1 if valid_passport? passport
+end
+
+puts valid_count
+
+1
+ like
+Reply
+ 
+mgasparel profile image
+Mike Gasparelli
+•
+Dec 6
+
+This is a fun little thread. Since there's no C# representation, I figured I would share my solution. I have a little framework code that handles some stuff behind the scenes such as locating and reading the file, as well as validating the solving on the sample data returns the correct solution, so you won't see any of that in the code here:
+
+Part 1
+    public class Part1 : Puzzle<IEnumerable<Passport>, int>
+    {
+        public override int SampleAnswer => 2;
+
+        public override IEnumerable<Passport> ParseInput(string rawInput)
+        {
+            return rawInput
+                .Split(Environment.NewLine + Environment.NewLine)
+                .Where(x => x.Length > 0)
+                .Select(ParsePassport);
+        }
+
+        protected Passport ParsePassport(string chunk)
+        {
+            var keyValuePairs = chunk
+                .Replace(Environment.NewLine, " ")
+                .TrimEnd()
+                .Split(' ')
+                .Select(pair => new KeyValuePair<string, string>(pair[..3], pair[4..]));
+
+            return new Passport(new Dictionary<string, string>(keyValuePairs));
+        }
+
+        public override int Solve(IEnumerable<Passport> input)
+            => input.Count(p => p.IsValid());
+    }
+Part 2
+    public class Part2 : Part1
+    {
+        public override int SampleAnswer => 2;
+
+        public override IEnumerable<Passport> ParseInput(string rawInput)
+        {
+            return rawInput
+                .Split(Environment.NewLine + Environment.NewLine)
+                .Where(x => x.Length > 0)
+                .Select(ParsePassport);
+        }
+
+        public override int Solve(IEnumerable<Passport> input)
+            => input.Count(p => p.IsStrictValid());
+    }
+Passport
+public class Passport
+    {
+        HashSet<string> mandatory = new() { "byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid" };
+        string[] eyeColors = { "amb", "blu", "brn", "gry", "grn", "hzl", "oth" };
+        Dictionary<string, string> fields = new();
+
+        public Passport(Dictionary<string, string> fields)
+        {
+            this.fields = fields;
+        }
+
+        public bool IsValid()
+            => mandatory.All(x => fields.ContainsKey(x));
+
+        public bool IsStrictValid()
+            => IsValid() && fields.All(f => IsFieldValid(f.Key, f.Value));
+
+        bool IsFieldValid(string key, string value)
+            => key switch
+            {
+                "byr" => IsYearValid(value, 1920, 2002),
+                "iyr" => IsYearValid(value, 2010, 2020),
+                "eyr" => IsYearValid(value, 2020, 2030),
+                "hgt" => IsHeightValid(value),
+                "hcl" => IsHairColorValid(value),
+                "ecl" => IsEyeColorValid(value),
+                "pid" => IsPidValid(value),
+                _ => true
+            };
+
+        private bool IsPidValid(string value)
+            => value.Length == 9
+                && long.TryParse(value, out _);
+
+        private bool IsEyeColorValid(string value)
+            => eyeColors.Contains(value);
+
+        private bool IsHairColorValid(string value)
+            => value[0] == '#'
+                && value.Length == 7
+                && value
+                    .ToLower()
+                    .Skip(1)
+                    .All(c => c >= '0' && c <= '9' || c>= 'a' && c <= 'z');
+
+        private bool IsHeightValid(string value)
+            => int.TryParse(value[..^2], out int iValue)
+                && value[^2..] == "cm"
+                    ? iValue >= 150 && iValue <= 193
+                    : iValue >= 59 && iValue <= 76;
+
+        bool IsYearValid(string value, int min, int max)
+            => int.TryParse(value, out int iValue)
+                && iValue >= min && iValue <= max;
+    }
+
+1
+ like
+Reply
+ 
+mellen profile image
+Matt Ellen
+•
+Dec 4
+
+Again, more javascript. It's in a gist if you like that sort of thing.
+
+Part 1 required far less code than part 2 😋
+
+function IDCheckp1()
+{
+  const lines = document.getElementsByTagName('pre')[0].innerHTML.split('\n');
+  const minFields = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'];
+  let fields = [];
+  const validCount = lines.reduce((count, line) =>
+  {
+    if(line.trim() === '')
+    {
+      if(minFields.every(field => fields.indexOf(field) > -1))
+      {
+        count++;
+      }
+      fields = [];
+    }
+    else
+    {
+      fields = fields.concat(line.split(' ')
+                                 .map(kvp => kvp.split(':')[0]));
+    }           
+    return count;
+  },0);
+  
+  return validCount;
+}
+
+function IDCheckp2()
+{
+  const lines = document.getElementsByTagName('pre')[0].innerHTML.split('\n');
+  const minFields = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'];
+  let fields = [];
+  let parts = [];
+  const validCount = lines.reduce((count, line) =>
+  {
+    if(line.trim() === '')
+    {
+      if(minFields.every(field => fields.indexOf(field) > -1))
+      {
+        let ID = JSON.parse('{'+parts.join(',')+'}');
+        if(isValidID(ID))
+        {
+          count++;
+        }
+      }
+      fields = [];
+      parts = [];
+    }
+    else
+    {
+      fields = fields.concat(line.split(' ')
+                                 .map(kvp => kvp.split(':')[0]));
+      parts = parts.concat(line.split(' ')
+                               .map(kvp =>
+                                    {
+                                      let [key, value] = kvp.split(':');
+                                      return `"${key}":"${value}"`;
+                                    }));
+
+    }           
+    return count;
+  },0);
+  
+  function isValidID(ID)
+  {
+    return (
+       ID['byr'].match(/^(19[2-9]\d|200[012])$/)
+    && ID['iyr'].match(/^20(1\d|20)$/)
+    && ID['eyr'].match(/^20(2\d|30)$/)
+    && isValidHeight(ID['hgt'])
+    && ID['hcl'].match(/^#[0-9a-fA-F]{6}$/)
+    && ['amb','blu','brn','gry','grn','hzl','oth'].includes(ID['ecl'])
+    && ID['pid'].match(/^\d{9}$/)
+    );
+  }
+  
+  function isValidHeight(heightstr)
+  {
+    let heightparts = heightstr.match(/^(\d+)(cm|in)$/);
+    if(heightparts)
+    {
+      let height = parseInt(heightparts[1], 10);
+      if(heightparts[2] == 'cm')
+      {
+        return Math.min(Math.max(height, 150), 193) == height;
+      }
+      else if(heightparts[2] == 'in')
+      {
+        return Math.min(Math.max(height, 59), 76) == height;
+      }
+    }
+    return false;
+  }
+  
+  return validCount; 
+}
+view rawaoc2020 day4.js hosted with ❤ by GitHub
+
+2
+ likes
+Reply
+ 
+klnjmm profile image
+Jimmy Klein
+•
+Dec 4
+
+Hi,
+
+A lot of class for this one in order to limit each class responsability.
+
+Full size here : Advent of Code - Day 4
+
+Advent of Code - Day 4
+
+
+2
+ likes
+Reply
+ 
+rpalo profile image
+Ryan Palo
+•
+Dec 4
+
+This was a long one, but I learned a ton about the <string.h> library. I also incremented a macro by 1 and spent 3 hours chasing a segfault. So, all in all, I think it sounds like we all had similar days. There are also several edge cases that I'm pretty sure my code doesn't cover, BUT that doesn't matter because this is AoC and it's not wrong if you get the stars. Right? Right?
+
+Day4.h:
+#ifndef AOC2020_DAY4_H
+#define AOC2020_DAY4_H
+
+/// Day 4: Passport Processing
+///
+/// Pick through passports made up of key/value pairs to figure out
+/// which ones are valid.
+
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define NUM_PASS_FIELDS 8  ///< Number of fields in a SimplePassport
+#define MAX_ENTRY_SIZE 20  ///< Max size of possible value in key/value
+#define KEY_SIZE 4         ///< Size of a key in key/value
+#define HAIR_COLOR_SIZE 8  ///< Size of a well-formed hair color
+#define PID_SIZE 10        ///< Size of a well-formed PID
+
+/// A simple passport just has certain fields or not.  Valid ones have
+/// them all, with 'cid' being optional.
+typedef struct {
+  bool byr;
+  bool iyr;
+  bool eyr;
+  bool hgt;
+  bool hcl;
+  bool ecl;
+  bool pid;
+  bool cid;
+} SimplePassport;
+
+/// Parses the input file, which is a series of passports.  Each key/val
+/// is separated by a space or newline.  Passports are separated by 
+/// two newlines.  Returns a list of passport structs.
+SimplePassport* parse_simple_passports(const char* filename, int* count);
+
+/// Counts the number of valid passports.  Passports are valid if
+/// the have all keys, except CID is optional.
+int part1(SimplePassport* passes, int count);
+
+// ============== Part 2 ================== //
+
+/// Possible values for height units: none, inches, or centimeters.
+typedef enum {
+  HT_BAD,
+  HT_IN,
+  HT_CM,
+} HeightUnit;
+
+/// A height is a measurement associated with a set of units.
+typedef struct {
+  int value;
+  HeightUnit units;
+} Height;
+
+/// Possible options for eye color
+typedef enum {
+  EYE_BAD,
+  EYE_AMBER,
+  EYE_BLUE,
+  EYE_BROWN,
+  EYE_GREY,
+  EYE_GREEN,
+  EYE_HAZEL,
+  EYE_OTHER,
+} EyeColor;
+
+/// A fancy passport has strict value validation for all fields.
+/// Note: all fields here must be present to win.
+typedef struct {
+  /// Birth Year: 1920 <= x <= 2002
+  int byr; 
+  /// Issue Year: 2010 <= x <= 2020
+  int iyr;
+  /// Expiration Year: 2020 <= x <= 2030
+  int eyr;
+  /// Height: 150 <= cm <= 193 || 59 <= in <= 76
+  Height hgt;
+  /// Hair Color: # followed by 6 chars 0-9 or a-f
+  char hcl[8];
+  /// Eye Color: amb | blu | brn | gry | grn | hzl | oth
+  EyeColor ecl;
+  /// Passport ID : Exactly 9 digits.  (Storing 10 to find invalid ones)
+  char pid[10];
+} FancyPassport;
+
+/// Parse fancy passports from an input file.  The number of them
+/// is stored in 'count'.
+FancyPassport* parse_fancy_passports(const char* filename, int* count);
+
+/// Counts the number of valid fancy passports based on the rules above.
+int part2(FancyPassport* passes, int count);
+
+/// Runs both parts.
+int day4(void);
+#endif
+Day4.c:
+#include "Day4.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/// Loops through a file and counts all instances of double-newlines.
+/// Adds one at the end for the last entry which doesn't have a trailing
+/// double-newline.
+static int count_passports(FILE* fp) {
+  int count = 0;
+  while (!feof(fp)) {
+    if (getc(fp) == '\n' && getc(fp) == '\n') count++;
+  }
+  count++; // No double newline after last one.
+
+  rewind(fp);
+  return count;
+}
+
+/// Parses a single passport from a file.  Leaves the file pointer 
+/// after the trailing double-newline, ready to parse the next one.
+static SimplePassport parse_simple_passport(FILE* fp) {
+  char key[4];
+  char value[20];
+  SimplePassport passport = {0};
+
+  while (!feof(fp) && getc(fp) != '\n') {
+    memset(key, 0, 4);
+    memset(value, 0, 20);
+    fseek(fp, -1, SEEK_CUR); // Un-eat the previous char because we need it.
+    fgets(key, KEY_SIZE, fp);
+
+    fscanf(fp, "%s", value);  // Eat the colon, value
+    getc(fp);  // Eat white space?
+
+    if (strcmp(key, "byr") == 0) passport.byr = true;
+    else if (strcmp(key, "iyr") == 0) passport.iyr = true;
+    else if (strcmp(key, "eyr") == 0) passport.eyr = true;
+    else if (strcmp(key, "hgt") == 0) passport.hgt = true;
+    else if (strcmp(key, "hcl") == 0) passport.hcl = true;
+    else if (strcmp(key, "ecl") == 0) passport.ecl = true;
+    else if (strcmp(key, "pid") == 0) passport.pid = true;
+    else if (strcmp(key, "cid") == 0) passport.cid = true;
+    else {
+      printf("Unrecognized key: %s\n", key);
+    }
+  }
+  return passport;
+}
+
+SimplePassport* parse_simple_passports(const char* filename, int* count) {
+  FILE* fp;
+  fp = fopen(filename, "r");
+  if (fp == NULL) {
+    printf("Couldn't open file.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  *count = count_passports(fp);
+  SimplePassport* passes = (SimplePassport*)malloc(sizeof(SimplePassport) * *count);
+
+  for (int i = 0; i < *count; i++) {
+    passes[i] = parse_simple_passport(fp);
+  }
+
+  fclose(fp);
+  return passes;
+}
+
+int part1(SimplePassport* passes, int count) {
+  int invalid = 0;
+  for (int i = 0; i < count; i++) {
+    bool* p = (bool*)&passes[i];
+
+    // Iterates over each field of the passport by using the bytes of
+    // the struct as an array of bools.  Which should be OK?
+    for (int j = 0; j < NUM_PASS_FIELDS - 1; j++) {
+      if (p[j] == false) {
+        invalid++;
+        break;
+      };
+    }
+  }
+  return count - invalid;
+}
+
+// ================= Part 2 ===================== //
+
+/// Parses a height string to a Height struct.  Well-formed strings
+/// are [0-9]+(in|cm).  If it's invalid, leaves the value as 0 and
+/// the units as HT_BAD.
+static Height parse_height(char* value) {
+  Height h;
+  int possible_value;
+  char units[4];
+  sscanf(value, "%d%s", &possible_value, units);
+
+  if (strcmp(units, "in") == 0) {
+    h.value = possible_value;
+    h.units = HT_IN;
+  } else if (strcmp(units, "cm") == 0) {
+    h.value = possible_value;
+    h.units = HT_CM;
+  } else {
+    h.value = 0;
+    h.units = HT_BAD;
+  }
+  return h;
+}
+
+/// Parses an EyeColor from a string.
+static EyeColor parse_eye_color(char* value) {
+  if (strcmp(value, "amb") == 0) return EYE_AMBER;
+  if (strcmp(value, "blu") == 0) return EYE_BLUE;
+  if (strcmp(value, "brn") == 0) return EYE_BROWN;
+  if (strcmp(value, "gry") == 0) return EYE_GREY;
+  if (strcmp(value, "grn") == 0) return EYE_GREEN;
+  if (strcmp(value, "hzl") == 0) return EYE_HAZEL;
+  if (strcmp(value, "oth") == 0) return EYE_OTHER;
+  return EYE_BAD;
+}
+
+/// Prints out a FancyPassport for debugging.
+static void print_fancy_passport(FancyPassport* p) {
+  printf("Passport:\n");
+  printf("BYR: %d\nIYR: %d\nEYR: %d\n", p->byr, p->iyr, p->eyr);
+  printf("HGT: %d-%d\nHCL: %s\nECL: %d\n", p->hgt.value, p->hgt.units, p->hcl, p->ecl);
+  printf("PID: %s\n", p->pid);
+}
+
+/// Parses a single fancy passport from a file.
+static FancyPassport parse_fancy_passport(FILE* fp) {
+  char key[KEY_SIZE];
+  char value[20];
+  FancyPassport passport = {0};
+
+  while (!feof(fp) && getc(fp) != '\n') {
+    memset(key, 0, 4);
+    memset(value, 0, 20);
+    fseek(fp, -1, SEEK_CUR); // Un-eat the previous char because we need it.
+    fgets(key, KEY_SIZE, fp);
+
+    fscanf(fp, ":%s", value);  // Eat the colon, value
+    getc(fp);  // Eat white space
+
+    if (strcmp(key, "byr") == 0) passport.byr = atoi(value);
+    else if (strcmp(key, "iyr") == 0) passport.iyr = atoi(value);
+    else if (strcmp(key, "eyr") == 0) passport.eyr = atoi(value);
+    else if (strcmp(key, "hgt") == 0) passport.hgt = parse_height(value);
+    else if (strcmp(key, "hcl") == 0) {
+      if (strlen(value) != HAIR_COLOR_SIZE - 1) continue;  // Leave it empty
+      strncpy(passport.hcl, value, HAIR_COLOR_SIZE - 1);
+    }
+    else if (strcmp(key, "ecl") == 0) passport.ecl = parse_eye_color(value);
+    else if (strcmp(key, "pid") == 0) {
+      if (strlen(value) != PID_SIZE - 1) continue;  // Leave it empty
+      strncpy(passport.pid, value, PID_SIZE - 1);
+    } 
+    else if (strcmp(key, "cid") == 0) continue;
+    else {
+      printf("Unrecognized key: %s\n", key);
+    }
+  }
+
+  return passport;
+}
+
+FancyPassport* parse_fancy_passports(const char* filename, int* count) {
+  FILE* fp;
+  fp = fopen(filename, "r");
+  if (fp == NULL) {
+    printf("Couldn't open file.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  *count = count_passports(fp);
+  FancyPassport* passes = (FancyPassport*)malloc(sizeof(FancyPassport) * *count);
+
+  for (int i = 0; i < *count; i++) {
+    passes[i] = parse_fancy_passport(fp);
+  }
+
+  fclose(fp);
+  return passes;
+}
+
+/// Checks whether a hair color is valid.
+static bool valid_hair_color(char* color) {
+  if (color[0] != '#') return false;
+  for (int i = 1; color[i]; i++) {
+    if ((color[i] < '0' || color[i] > '9') && (color[i] < 'a' || color[i] > 'f')) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/// Checks whether a PID is valid.
+static bool valid_pid(char* value) {
+  if (strlen(value) != PID_SIZE - 1) return false;
+  for (int i = 0; value[i]; i++) {
+    if (value[i] < '0' || value[i] > '9') return false;
+  }
+  return true;
+}
+
+/// Finger-saving macro for part2: increment the invalids and continue
+#define INC_BAD {invalid++; continue;}
+
+int part2(FancyPassport* passes, int count) {
+  int invalid = 0;
+  for (int i = 0; i < count; i++) {
+    FancyPassport p = passes[i];
+
+    if (p.byr < 1920 || p.byr > 2002) INC_BAD
+    if (p.iyr < 2010 || p.iyr > 2020) INC_BAD
+    if (p.eyr < 2020 || p.eyr > 2030) INC_BAD
+    if (p.hgt.units == HT_BAD) INC_BAD
+    if (p.hgt.units == HT_CM && (p.hgt.value < 150 || p.hgt.value > 193)) INC_BAD
+    if (p.hgt.units == HT_IN && (p.hgt.value < 59 || p.hgt.value > 76)) INC_BAD
+    if (!valid_hair_color(p.hcl)) INC_BAD
+    if (p.ecl == EYE_BAD) INC_BAD
+    if (!valid_pid(p.pid)) INC_BAD
+  }
+  return count - invalid;
+}
+
+int day4() {
+  int count;
+  SimplePassport* passes = parse_simple_passports("data/day4.txt", &count);
+  printf("====== Day 4 ======\n");
+  printf("Part 1: %d\n", part1(passes, count));
+  free(passes);
+
+  count = 0;
+  FancyPassport* passes2 = parse_fancy_passports("data/day4.txt", &count);
+  printf("Part 2: %d\n", part2(passes2, count));
+  free(passes2);
+  return EXIT_SUCCESS;
+}
+
+1
+ like
+Reply
+ 
+patryk profile image
+Patryk Woziński
+•
+Dec 4
+
+God damn, it was not that easy for me! To be honest, I'm not the best with both algorithms and Elixir, but... anyway AoC is a great chance to improve these skills. I've wasted time making stupid things with Regex. Facepalm.
+
+There is my solution for the first step:
+defmodule AdventOfCode.Day4Part1 do
+  def calculate(file_path) do
+    file_path
+    |> read_passports()
+    |> Enum.filter(&valid_passport?(&1))
+    |> Enum.count()
+  end
+
+  defp read_passports(file_path) do
+    File.read!(file_path)
+    |> String.split("\n\n", trim: true)
+    |> Enum.map(&prepare_passport(&1))
+  end
+
+  defp prepare_passport(passport) do
+    passport
+    |> String.splitter("\n", trim: true)
+    |> Enum.flat_map(&String.split(&1))
+    |> Enum.into(%{}, fn field ->
+      field
+      |> String.split(":")
+      |> List.to_tuple()
+    end)
+  end
+
+  defp valid_passport?(document) do
+    not is_nil(document["byr"]) and
+      not is_nil(document["iyr"]) and
+      not is_nil(document["eyr"]) and
+      not is_nil(document["hgt"]) and
+      not is_nil(document["hcl"]) and
+      not is_nil(document["ecl"]) and
+      not is_nil(document["pid"])
+  end
+end
+And the second step:
+defmodule AdventOfCode.Day4Part2 do
+  def calculate(file_path) do
+    file_path
+    |> read_passports()
+    |> Enum.filter(&valid_passport?(&1))
+    |> Enum.count()
+  end
+
+  defp read_passports(file_path) do
+    File.read!(file_path)
+    |> String.split("\n\n", trim: true)
+    |> Enum.map(&prepare_passport(&1))
+  end
+
+  defp prepare_passport(passport) do
+    passport
+    |> String.splitter("\n", trim: true)
+    |> Enum.flat_map(&String.split(&1))
+    |> Enum.into(%{}, fn field ->
+      field
+      |> String.split(":")
+      |> List.to_tuple()
+    end)
+  end
+
+  defp valid_passport?(document) do
+    document["byr"] |> between?(1920, 2002) and
+      document["iyr"] |> between?(2010, 2020) and
+      document["eyr"] |> between?(2020, 2030) and
+      document["hgt"] |> valid_height?() and
+      document["hcl"] |> valid_hair_color?() and
+      document["ecl"] |> valid_eye_color?() and
+      document["pid"] |> valid_passport_id?()
+  end
+
+  defp between?(year, from, to) when is_binary(year),
+    do: String.to_integer(year) |> between?(from, to)
+
+  defp between?(year, from, to) when is_integer(year), do: year in from..to
+
+  defp between?(nil, _from, _to), do: false
+
+  defp valid_height?(full_height) when is_binary(full_height) do
+    case Integer.parse(full_height) do
+      {height, "in"} when height in 59..76 -> true
+      {height, "cm"} when height in 150..193 -> true
+      _ -> false
+    end
+  end
+
+  defp valid_height?(nil), do: false
+
+  defp valid_hair_color?(hair_color) when is_binary(hair_color),
+    do: String.match?(hair_color, ~r/^#[0-9a-f]{6}$/)
+
+  defp valid_hair_color?(nil), do: false
+
+  defp valid_eye_color?(eye_color) when is_binary(eye_color),
+    do: eye_color in ~w(amb blu brn gry grn hzl oth)
+
+  defp valid_eye_color?(nil), do: false
+
+  defp valid_passport_id?(passport_id) when is_binary(passport_id),
+    do: String.match?(passport_id, ~r/^[0-9]{9}$/)
+
+  defp valid_passport_id?(nil), do: false
+end
+
+1
+ like
+Reply
+ 
+thibpat profile image
+Thibaut Patel
+•
+Dec 9
+
+My JavaScript walkthrough:
+
+
+
+2
+ likes
+Reply
+Code of Conduct • Report abuse
+Read next
+subinedge profile image
+Evaluate Reverse Polish Notation expressions using JavaScript | Algorithms
+Subin S - Apr 10
+
+alexgurr profile image
+React coding challenges for interviews/beginners
+Alex Gurr - Mar 28
+
+florinpop17 profile image
+The #7Days7Websites Coding Challenge
+Florin Pop - Mar 25
+
+liaowow profile image
+Take 'this' Quiz, Understand How 'this' Works in JavaScript
+Annie Liao - Feb 9
+
+Ryan Palo profile image
+Ryan Palo
+Ryan is an engineer in the Sacramento Area with a focus in Python, Ruby, and Rust. Bash/Python Exercism mentor. Coding, physics, calculus, music, woodworking. Message me on DEV!
+Follow
+WORK
+Mechanical Engineer at ProtoQuick, Inc.
+LOCATION
+Elk Grove, CA
+WORK STATUS
+I'm looking for work!
+EDUCATION
+M.S.C.S. Lewis University (Spring of 2021), B.S.M.E. Cal Poly (SLO)
+JOINED
+Mar 15, 2017
+More from Ryan Palo
+Advent of Code 2020 Solution Megathread - Day 12: Rain Risk
+#adventofcode #challenge
+Advent of Code 2020 Solution Megathread - Day 11: Seating System
+#adventofcode #challenge
+Advent of Code 2020 Solution Megathread - Day 10: Adapter Array
+#adventofcode #challenge
+#[derive(Debug)]
+struct Passport {
+    birth_year: Option<usize>,
+    issue_year: Option<usize>,
+    exp_year: Option<usize>,
+    height: Option<String>,
+    hair_color: Option<String>,
+    eye_color: Option<String>,
+    pid: Option<String>,
+    cid: Option<usize>,
+}
+
+impl From<&str> for Passport {
+    fn from(s: &str) -> Self {
+        let (
+            mut birth_year,
+            mut issue_year,
+            mut exp_year,
+            mut height,
+            mut hair_color,
+            mut eye_color,
+            mut pid,
+            mut cid,
+        ) = (
+            Option::None,
+            Option::None,
+            Option::None,
+            Option::None,
+            Option::None,
+            Option::None,
+            Option::None,
+            Option::None,
+        );
+        s.split(" ").filter(|i| !i.is_empty()).for_each(|i| {
+            let name_var: Vec<&str> = i.split(":").collect();
+            match name_var[0] {
+                "byr" => birth_year = Option::Some(name_var[1].parse().unwrap()),
+                "iyr" => issue_year = Option::Some(name_var[1].parse().unwrap()),
+                "eyr" => exp_year = Option::Some(name_var[1].parse().unwrap()),
+                "hgt" => height = Option::Some(String::from(name_var[1])),
+                "hcl" => hair_color = Option::Some(String::from(name_var[1])),
+                "ecl" => eye_color = Option::Some(String::from(name_var[1])),
+                "pid" => pid = Option::Some(String::from(name_var[1])),
+                "cid" => cid = Option::Some(name_var[1].parse().unwrap()),
+                _ => {}
+            }
+        });
+        Passport {
+            birth_year,
+            issue_year,
+            exp_year,
+            height,
+            hair_color,
+            eye_color,
+            pid,
+            cid,
+        }
+    }
+}
+
+impl Passport {
+    pub fn is_valid(&self) -> bool {
+        self.birth_year.is_some()
+            && self.issue_year.is_some()
+            && self.exp_year.is_some()
+            && self.height.is_some()
+            && self.hair_color.is_some()
+            && self.eye_color.is_some()
+            && self.pid.is_some()
+    }
+
+    pub fn is_valid_strict(&self) -> bool {
+        self.valid_birth_year()
+            && self.valid_issue_year()
+            && self.valid_exp_year()
+            && self.valid_hgt()
+            && self.valid_hair()
+            && self.valid_eyes()
+            && self.valid_pid()
+    }
+
+    fn valid_birth_year(&self) -> bool {
+        (1920..=2002).contains(&self.birth_year.unwrap_or_default())
+    }
+
+    fn valid_issue_year(&self) -> bool {
+        (2010..=2020).contains(&self.issue_year.unwrap_or_default())
+    }
+
+    fn valid_exp_year(&self) -> bool {
+        (2020..=2030).contains(&self.exp_year.unwrap_or_default())
+    }
+
+    fn valid_hgt(&self) -> bool {
+        if let Some(height) = self.height.as_ref() {
+            let range = match &height[height.len() - 2..] {
+                "in" => (59..=76),
+                "cm" => (150..=193),
+                _ => return false,
+            };
+            range.contains(&height[0..height.len() - 2].parse::<usize>().unwrap_or(0))
+        } else {
+            false
+        }
+    }
+
+    fn valid_hair(&self) -> bool {
+        Passport::valid_str(self.hair_color.as_ref(), r"^#[0-9a-f]{6}$")
+    }
+
+    fn valid_eyes(&self) -> bool {
+        Passport::valid_str(self.eye_color.as_ref(), r"^amb|blu|brn|gry|grn|hzl|oth$")
+    }
+
+    fn valid_pid(&self) -> bool {
+        Passport::valid_str(self.pid.as_ref(), r"^[0-9]{9}$")
+    }
+
+    fn valid_str(maybe_str: Option<&String>, re: &str) -> bool {
+        if let Some(str) = maybe_str {
+            let re = regex::Regex::new(re).unwrap();
+            let captures = re.captures(str.as_str());
+            captures.is_some()
+        } else {
+            false
+        }
+    }
+}
+
+#[aoc_generator(day4)]
+fn input_to_vec(input: &str) -> Vec<Passport> {
+    let mut cleaned_str = String::from("");
+    let mut cleaned_input: Vec<Passport> = vec![];
+    input.lines().for_each(|i| {
+        if i.is_empty() && !cleaned_str.is_empty() {
+            cleaned_input.push(Passport::from(cleaned_str.as_str()));
+            cleaned_str = String::from("");
+        }
+        cleaned_str += i;
+        cleaned_str += " ";
+    });
+    if !cleaned_str.is_empty() {
+        cleaned_input.push(Passport::from(cleaned_str.as_str()));
+    }
+    cleaned_input
+}
+
+#[aoc(day4, part1)]
+fn valid_count(input: &Vec<Passport>) -> usize {
+    input.iter().filter(|p| p.is_valid()).count()
+}
+
+#[aoc(day4, part2)]
+fn strict_valid_count(input: &Vec<Passport>) -> usize {
+    input.iter().filter(|p| p.is_valid_strict()).count()
+}
+Home Listings Podcasts Videos Tags Code of Conduct FAQ DEV Shop Sponsors About Privacy Policy Terms of use Contact Sign In/Up
+    
+DEV Community – A constructive and inclusive social network. Open source and radically transparent.
+
+Built on Forem — the open source software that powers DEV and other inclusive communities.
+
+Made with love and Ruby on Rails. DEV Community © 2016 - 2020.
+
+Sloan, the sloth mascot
